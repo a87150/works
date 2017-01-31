@@ -32,14 +32,13 @@ class Tool:
 tool = Tool()
 request = Request('http://www.yinwang.org/')
 response = urlopen(request)
-pattern = re.compile(r'title">.*?<a href=".*?(.*?)">.*?(.*?)</a>',re.S)
+pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>',re.S)
 page = response.read().decode('utf-8')
-Title = re.findall(pattern,page)
-pageTitle = []
-for item in Title:
-      pageTitle.append([item[0].strip()])#,item[1].strip()
-print(pageTitle)
-blogurl = pageTitle
+blog = re.findall(pattern,page)
+blogurl = []
+for item in blog:
+      blogurl.append([item[0].strip()])#,item[1].strip()
+print(blogurl)
 for item in blogurl:
      blogURL = item[0]
      blogpage = tool.replace(urlopen(blogURL).read().decode('utf-8'))
