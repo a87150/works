@@ -27,7 +27,7 @@ class Tool:
         x = re.sub(self.replaceBR,"\n",x)
         x = re.sub(self.removeExtraTag,"",x)
         #strip()将前后多余内容删除
-        return x.strip('\u22ef')
+        return x.strip()
 
 tool = Tool()
 request = Request('http://www.yinwang.org/')
