@@ -11,13 +11,13 @@ def url_open(url):
 
 for number in range(1,10):
 	page_number = str(number)
-	page = url_open('http://www.pornpicc.com/page/' + page_number).decode('utf-8')
-	pattern = re.compile(r'<img alt="" width="300" src=".*?(.*?)"',re.S)
+	page = url_open('https://avmo.pw/ja/page/' + page_number).decode('utf-8')
+	pattern = re.compile(r'<img alt="" width="300" src="(.*?)"',re.S)
 	imgs = re.findall(pattern,page)
 	print(imgs)
 	for img in imgs:
 		conn = url_open(img)
 		filename = img[-10:]
-		with open("E:/新建文件夹 (2)/" + filename,"wb") as f:
+		with open("E:/新建文件夹 (3)/" + filename,"wb") as f:
 			f.write(conn)
 			print("写入成功")
