@@ -37,12 +37,12 @@ page = response.read().decode('utf-8')
 blog = re.findall(pattern,page)
 blogurl = []
 for item in blog:
-      blogurl.append([item[0].strip()])#,item[1].strip()
+    blogurl.append([item[0].strip()])#,item[1].strip()
 print(blogurl)
 for item in blogurl:
-     blogURL = item[0]
-     blogpage = tool.replace(urlopen(blogURL).read().decode('utf-8'))
-     fileName = 'blog' + ".txt"
-     with open(fileName,"a",encoding='utf-8') as f:
-          f.write(blogpage)
-          print("写入成功")
+    blogURL = item[0]
+    blogpage = tool.replace(urlopen(blogURL).read().decode('utf-8'))
+    fileName = 'blog' + ".txt"
+    with open(fileName,"a",encoding='utf-8') as f:
+        f.write(blogpage)
+        print("写入成功")
