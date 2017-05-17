@@ -1,4 +1,4 @@
-from urllib.request import urlopen , Request
+from urllib import request
 import re
 
 class Tool:
@@ -30,8 +30,7 @@ class Tool:
         return x.strip()
 
 tool = Tool()
-request = Request('http://www.yinwang.org/')
-response = urlopen(request)
+response = request.urlopen('http://www.yinwang.org/')
 pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>',re.S)
 page = response.read().decode('utf-8')
 blog = re.findall(pattern,page)
@@ -41,7 +40,7 @@ for item in blog:
 print(blogurl)
 for item in blogurl:
     blogURL = item[0]
-    blogpage = tool.replace(urlopen(blogURL).read().decode('utf-8'))
+    blogpage = tool.replace(request.urlopen(blogURL).read().decode('utf-8'))
     fileName = 'blog' + ".txt"
     with open(fileName,"a",encoding='utf-8') as f:
         f.write(blogpage)
