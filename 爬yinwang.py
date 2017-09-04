@@ -34,12 +34,10 @@ response = request.urlopen('http://www.yinwang.org/')
 pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>',re.S)
 page = response.read().decode('utf-8')
 blog = re.findall(pattern,page)
-blogurl = []
-for item in blog:
-    blogurl.append([item[0].strip()])#,item[1].strip()
-print(blogurl)
-for item in blogurl:
-    blogURL = item[0]
+
+for blogurl in blog:
+    print(blogurl)
+    blogURL = 'http://www.yinwang.org'+blogurl[0]
     blogpage = tool.replace(request.urlopen(blogURL).read().decode('utf-8'))
     fileName = 'blog' + ".txt"
     with open(fileName,"a",encoding='utf-8') as f:
