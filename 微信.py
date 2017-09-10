@@ -16,14 +16,10 @@ def text_reply(msg):
     itchat.send((friend['RemarkName'] + '你好哇。Nice to meet you!'), msg['FromUserName'])
     
 @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
-def other_reply(msg):
-    print(msg)
-    msg['Text'](msg['FileName'])
-    # picture = 
-    # return 'E:\\kukuku\\3206682.jpg'
-    print('@%s@%s' % ({'Picture': 'img', 'Video': 'vid'}.get(msg['Type'], 'fil'), msg['FileName']))
-    # 把下载好的文件再发回给发送者
-    return '@%s@%s' % ({'Picture': 'img', 'Video': 'vid'}.get(msg['Type'], 'fil'), msg['FileName'])
+def download_files(msg):
+    msg.download(msg.fileName)
+    typeSymbol = {PICTURE: 'img',VIDEO: 'vid', }.get(msg.type, 'fil')
+    return '@%s@%s' % (typeSymbol, msg.fileName)
     
 def sendGreeting(msg):
     global replied
