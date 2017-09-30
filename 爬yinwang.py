@@ -2,9 +2,8 @@ from urllib import request
 import re
 
 class Tool:
-    replaceHEAD = re.compile(r'<script>.*?</script>',re.S)
-    #去除img标签,7位长空格
-    removeImg = re.compile('<img.*?>| {7}|')
+    removeIns = re.compile('<ins.*?></ins>', re.S)
+    removeHead = re.compile('<script>.*?</script>', re.S)
     #删除超链接标签
     removeAddr = re.compile('<a.*?>|</a>')
     #把换行的标签换为\n
@@ -17,29 +16,32 @@ class Tool:
     replaceBR = re.compile('<br><br>|<br>')
     #将其余标签剔除
     removeExtraTag = re.compile('<.*?>')
-    def replace(self,x):
-        x = re.sub(self.replaceHEAD,"",x)
-        x = re.sub(self.removeImg,"",x)
+
+    def replace(self, x):
+        x = re.sub(self.removeIns,"",x)
+        x = re.sub(self.removeHead,"",x)
         x = re.sub(self.removeAddr,"",x)
-        x = re.sub(self.replaceLine,"\n",x)
+        x = re.sub(self.replaceLine,"",x)
         x = re.sub(self.replaceTD,"\t",x)
-        x = re.sub(self.replacePara,"\n    ",x)
+        x = re.sub(self.replacePara,"\n",x)
         x = re.sub(self.replaceBR,"\n",x)
         x = re.sub(self.removeExtraTag,"",x)
         #strip()将前后多余内容删除
         return x.strip()
 
 tool = Tool()
-response = request.urlopen('http://www.yinwang.org/')
-pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>',re.S)
-page = response.read().decode('utf-8')
-blog = re.findall(pattern,page)
+response = request.urlopen('http://www.yinwang.org/').read().decode('utf-8')
+pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>', re.S)
+blog = re.findall(pattern, response)
+pattern2 = re.compile(r'<td width="60%">.*?</td>', re.S)
 
-for blogurl in blog:
-    print(blogurl)
-    blogURL = 'http://www.yinwang.org'+blogurl[0]
-    blogpage = tool.replace(request.urlopen(blogURL).read().decode('utf-8'))
-    fileName = 'blog' + ".txt"
-    with open(fileName,"a",encoding='utf-8') as f:
-        f.write(blogpage)
+for item in blog:
+    print(item)
+    blogurl = 'http://www.yinwang.org' + item[0]
+    blogpage = request.urlopen(blogurl).read().decode('utf-8')
+    body = re.findall(pattern2, blogpage)
+    article = "\n"*4 + tool.replace(body[0])
+    fileName = 'blog.txt'
+    with open(fileName,"a", encoding='utf-8') as f:
+        f.write(article)
         print("写入成功")
