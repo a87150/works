@@ -32,16 +32,17 @@ class Tool:
 tool = Tool()
 response = request.urlopen('http://www.yinwang.org/').read().decode('utf-8')
 pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>', re.S)
-blog = re.findall(pattern, response)
+blog = pattern.findall(response)
 pattern2 = re.compile(r'<td width="60%">.*?</td>', re.S)
 
 for item in blog:
     print(item)
     blogurl = 'http://www.yinwang.org' + item[0]
     blogpage = request.urlopen(blogurl).read().decode('utf-8')
-    body = re.findall(pattern2, blogpage)
+    body = pattern2.findall(blogpage)
     article = "\n"*4 + tool.replace(body[0])
     fileName = 'blog.txt'
+
     with open(fileName,"a", encoding='utf-8') as f:
         f.write(article)
         print("写入成功")
