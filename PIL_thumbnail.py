@@ -1,8 +1,29 @@
 from PIL import Image
 
-im = Image.open(r'C:\Users\a8715\Desktop\teKtfZq.jpg')
-w = im.size[0]//2
-h = im.size[1]//2
-size = (w, h)
-im.thumbnail(size)
-im.save('s.JPEG', "JPEG")
+import os
+
+def thumbnail(path):
+    im = Image.open(path)
+    w = im.size[0] // 1
+    h = im.size[1] // 1
+    size = (w, h)
+    im.thumbnail(size)
+    im.save(path, "JPEG")
+
+
+def file(path):
+    l = []
+    for p in path:
+        l.append([p + '/' + file for p, _, files in os.walk(p) for file in files if '.jpg' in file])
+    return l
+
+fl = file(['/0/' + f for f in os.listdir('/0/') if f != 'img'])
+
+for fileList in fl:
+    for f in fileList:
+        print(f)
+        try:
+            thumbnail(f)
+        except Exception as identifier:
+            print(identifier)
+        
