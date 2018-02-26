@@ -8,7 +8,14 @@ def thumbnail(path):
     h = im.size[1] // 1
     size = (w, h)
     im.thumbnail(size)
-    im.save(path, "JPEG")
+    print len(im.split())
+
+    if len(im.split()) == 4:
+        r, g, b, a = im.split()
+        im = Image.merge("RGB", (r, g, b))
+        im.save(path, "JPEG")
+    else:
+        im.save(path, "JPEG")
 
 
 def file(path):

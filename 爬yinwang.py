@@ -1,48 +1,53 @@
 from urllib import request
 import re
+import sqlite3
 
-class Tool:
-    removeIns = re.compile('<ins.*?></ins>', re.S)
-    removeHead = re.compile('<script>.*?</script>', re.S)
-    #删除超链接标签
-    removeAddr = re.compile('<a.*?>|</a>')
-    #把换行的标签换为\n
-    replaceLine = re.compile('<tr>|<div>|</div>|</p>')
-    #将表格制表<td>替换为\t
-    replaceTD= re.compile('<td>')
-    #把段落开头换为\n加空两格
-    replacePara = re.compile('<p>')
-    #将换行符或双换行符替换为\n
-    replaceBR = re.compile('<br><br>|<br>')
-    #将其余标签剔除
-    removeExtraTag = re.compile('<.*?>')
+from bs4 import BeautifulSoup
 
-    def replace(self, x):
-        x = re.sub(self.removeIns,"",x)
-        x = re.sub(self.removeHead,"",x)
-        x = re.sub(self.removeAddr,"",x)
-        x = re.sub(self.replaceLine,"",x)
-        x = re.sub(self.replaceTD,"\t",x)
-        x = re.sub(self.replacePara,"\n",x)
-        x = re.sub(self.replaceBR,"\n",x)
-        x = re.sub(self.removeExtraTag,"",x)
-        #strip()将前后多余内容删除
-        return x.strip()
 
-tool = Tool()
-response = request.urlopen('http://www.yinwang.org/').read().decode('utf-8')
-pattern = re.compile(r'title">.*?<a href="(.*?)">(.*?)</a>', re.S)
-blog = pattern.findall(response)
-pattern2 = re.compile(r'<td width="60%">.*?</td>', re.S)
 
-for item in blog:
-    print(item)
-    blogurl = 'http://www.yinwang.org' + item[0]
-    blogpage = request.urlopen(blogurl).read().decode('utf-8')
-    body = pattern2.findall(blogpage)
-    article = "\n"*4 + tool.replace(body[0])
-    fileName = 'blog.txt'
+def crawl_yinwang(url):
+    response = request.urlopen(url).read().decode('utf-8')
+    blog = BeautifulSoup(response, 'html.parser')
+    page = {}
 
-    with open(fileName,"a", encoding='utf-8') as f:
-        f.write(article)
-        print("写入成功")
+    for link in blog.find_all('a'):
+        title = link.get_text()
+        blog_url = url + link.get('href')
+
+        if  title not in ['博客', '付费', '当然我在扯淡']:
+            print(title, blog_url)
+            page[title] = blog_url
+
+    return page
+
+def save_article(page):
+    conn = sqlite3.connect('article.db')
+
+    try:
+        conn.execute('create table article (title varchar(100) primary key, content varchar(20000))')
+    except:
+        pass
+
+    for title, url in page.items():
+        response = request.urlopen(url).read().decode('utf-8')
+        article = BeautifulSoup(response, 'html.parser')
+        content = str(article.div)
+
+        try:
+            with conn:
+                conn.execute('insert into article (title, content) values (?, ?)', (title, content))
+            print('成功')
+
+        except sqlite3.IntegrityError as e:
+            with conn:
+                conn.execute('update article set content = ? where title = ?', (content, title))
+            print('更新')
+
+    conn.close()
+
+
+url = 'http://www.yinwang.org'
+page = crawl_yinwang(url)
+
+save_article(page)
