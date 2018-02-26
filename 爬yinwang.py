@@ -5,7 +5,6 @@ import sqlite3
 from bs4 import BeautifulSoup
 
 
-
 def crawl_yinwang(url):
     response = request.urlopen(url).read().decode('utf-8')
     blog = BeautifulSoup(response, 'html.parser')
@@ -21,8 +20,9 @@ def crawl_yinwang(url):
 
     return page
 
+
 def save_article(page):
-    conn = sqlite3.connect('article.db')
+    conn = sqlite3.connect('yinwang_article.db')
 
     try:
         conn.execute('create table article (title varchar(100) primary key, content varchar(20000))')
